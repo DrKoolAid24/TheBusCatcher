@@ -5,4 +5,12 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>The Bus Catcher</name>
   <description>Application to retrieve public transit data in GTFS format and abstract into a database</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<version>3.8.2</version>
+  		<scope>test</scope>
+  	</dependency>
+  </dependencies>
 </project>

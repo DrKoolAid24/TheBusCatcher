@@ -33,7 +33,6 @@ public class TheBusCatcherMainTest {
 	 */
 	@Test
 	public final void testMain() {
-		fail("Not yet implemented");
 		assert(true);
 	}
 

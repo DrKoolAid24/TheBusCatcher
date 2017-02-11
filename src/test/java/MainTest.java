@@ -12,7 +12,7 @@ import org.junit.Test;
  * @author skilker
  *
  */
-public class TheBusCatcherMainTest {
+public class MainTest {
 
 	/**
 	 * @throws java.lang.Exception

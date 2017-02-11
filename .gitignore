@@ -27,5 +27,6 @@ buildNumber.properties
 .settings
 
 #TheBusCatcher App
+.classpath
 config.properties
 

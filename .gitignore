@@ -25,6 +25,10 @@ buildNumber.properties
 
 # Eclipse
 .settings
+.project
+
+# SonarQube
+sonar-project.properties
 
 #TheBusCatcher App
 .classpath

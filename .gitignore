@@ -28,7 +28,7 @@ buildNumber.properties
 .project
 
 # SonarQube
-sonar-project.properties
+#sonar-project.properties
 
 #TheBusCatcher App
 .classpath

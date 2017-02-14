@@ -26,6 +26,7 @@ buildNumber.properties
 # Eclipse
 .settings
 .project
+org.eclipse.*
 
 # SonarQube
 #sonar-project.properties
@@ -34,3 +35,5 @@ buildNumber.properties
 .classpath
 config.properties
 
+#Mac
+.DS_Store

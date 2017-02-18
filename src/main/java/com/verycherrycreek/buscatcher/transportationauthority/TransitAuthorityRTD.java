@@ -35,10 +35,11 @@ public class TransitAuthorityRTD extends TransitAuthority implements TransitAuth
 	
 	
 	/**
-	 * @param identifier
+	 * @param pIdentifier Identifies the TransitAuthority
+	 * @param pResourceName Name of the resource file that will be used to load the initial configuration
 	 */
-	public TransitAuthorityRTD(TRANSIT_AUTHORITY pIdentifier, String pConfigFileName) {
-		super(pIdentifier, pConfigFileName);
+	public TransitAuthorityRTD(TRANSIT_AUTHORITY pIdentifier, String pResourceName) {
+		super(pIdentifier, pResourceName);
 		if (super.getConfiguration()) {
 			username = props.getProperty(TransitAuthorityProperties.USER_NAME);
 			password = props.getProperty(TransitAuthorityProperties.PASSWORD);

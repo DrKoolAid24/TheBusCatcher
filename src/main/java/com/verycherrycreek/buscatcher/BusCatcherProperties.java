@@ -22,7 +22,12 @@ public class BusCatcherProperties {
 	    RTD
 	}
 	
+	// Transit Authority properties
 	protected String currentTransitAuthority;
-			
-
+	
+	// Database properties
+	protected String currentDatabaseName;
+	protected String currentVehiclePositionTableName;
+	protected String currentTripUpdateTableName;
+	
 }

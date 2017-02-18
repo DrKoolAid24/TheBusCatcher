@@ -5,6 +5,8 @@
  *-------------------------------------------------------------------------*/
 package com.verycherrycreek.buscatcher;
 
+import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityProperties.TRANSIT_AUTHORITY;
+
 /**
  * @author skilker
  * 
@@ -17,17 +19,16 @@ package com.verycherrycreek.buscatcher;
 public class BusCatcherProperties {
 
 
-	// Possible Transit Authority properties values
-	enum TRANSIT_AUTHORITY {
-	    RTD
-	}
 	
 	// Transit Authority properties
-	protected String currentTransitAuthority;
+	protected TRANSIT_AUTHORITY currentTransitAuthority;
 	
 	// Database properties
 	protected String currentDatabaseName;
 	protected String currentVehiclePositionTableName;
 	protected String currentTripUpdateTableName;
+	
+	
+
 	
 }

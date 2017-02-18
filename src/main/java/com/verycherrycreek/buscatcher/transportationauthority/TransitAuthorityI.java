@@ -5,6 +5,9 @@
  *-------------------------------------------------------------------------*/
 package com.verycherrycreek.buscatcher.transportationauthority;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 
 /**
@@ -19,7 +22,7 @@ public interface TransitAuthorityI {
 	 * 
 	 * @return FeedMessage Contains All current Vehicle Positions available
 	 */
-	public FeedMessage getVehiclePositions();
+	public FeedMessage getVehiclePositions()throws MalformedURLException,IOException;
 	
 	
 	/**
@@ -30,4 +33,7 @@ public interface TransitAuthorityI {
 	 */
 	public FeedMessage getTripUpdates();
 	
+	public void setUsername(String pUsername);
+	
+	public void setPassword(String pPassword);
 }

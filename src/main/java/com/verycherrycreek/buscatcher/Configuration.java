@@ -14,8 +14,10 @@ import java.util.Properties;
  *
  */
 public class Configuration {
-	public static String RTD_USER_NAME = "rtdusername";
-	public static String RTD_PASSWORD = "rtdpassword";
+	public static final String RTD_USER_NAME = "rtdusername";
+	public static final String RTD_PASSWORD = "rtdpassword";
+	public static final String TRANSIT_AUTHORITY = "transitauthority";
+	public static final String TRANSIT_AUTHORITY_RESOURCE_NAME = "transitauthorityresourcename";
 
 	private String resourceName;
 	public Properties props;

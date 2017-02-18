@@ -38,14 +38,21 @@ import org.mongodb.morphia.annotations.Reference;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.mongodb.MongoClient;
+import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityFactory;
+import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityI;
+import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityProperties;
 
 public class Main {
 	
 	private static String CONFIG_PROPERTIES_FILE = "config.properties";
 	private static String ERROR_RETRIEVING_CONFIGURATION_FILE = "Error occured retrieving configuration file";
+	private static String INVALID_TRANSIT_AUTHORITY = "Invalid Transit Authority found";
 		
 	public static void main(String[] args) {
 		
+		// Create BusCatcherProperties to manage execution properties
+		BusCatcherProperties busCatcherProperties = new BusCatcherProperties();
+
 		// Read properties file to get main configuration settings
 		Configuration configuration = new Configuration(CONFIG_PROPERTIES_FILE);
 		if (!configuration.getConfiguration()) {			
@@ -53,9 +60,39 @@ public class Main {
 			System.exit(1);
 		}
 		
+		// Check if using a valid Transit Authority		
+		String transitAuthorityProp = configuration.props.getProperty(Configuration.TRANSIT_AUTHORITY);
+		busCatcherProperties.currentTransitAuthority = TransitAuthorityProperties.createTransitAuthorityEnum(transitAuthorityProp);
+		if (busCatcherProperties.currentTransitAuthority == TransitAuthorityProperties.TRANSIT_AUTHORITY.INVALID) {
+			System.out.print(ERROR_RETRIEVING_CONFIGURATION_FILE);
+			System.exit(1);			
+		}
+		
+		// TODO populate properties for execution
+		
+		
+		// Get Transit Authority using identifier from properties		
+		String transitAuthorityConfigFileProp = configuration.props.getProperty(Configuration.TRANSIT_AUTHORITY_RESOURCE_NAME);
+		TransitAuthorityI transitAuthority = TransitAuthorityFactory.createTransitAuthority(busCatcherProperties.currentTransitAuthority,transitAuthorityConfigFileProp);
+		
 		String rtdUsername = configuration.props.getProperty(configuration.RTD_USER_NAME);
 		String rtdPassword = configuration.props.getProperty(configuration.RTD_PASSWORD);
 
+		// Currently seting password from main config file to keep it from Github for now
+		transitAuthority.setPassword(rtdPassword);
+		transitAuthority.setUsername(rtdUsername);
+		
+		FeedMessage vehiclePositionsFeedMessage = null;
+		try {
+			vehiclePositionsFeedMessage = transitAuthority.getVehiclePositions();
+		} catch (MalformedURLException e) {
+			System.out.println("Malformed URL: " + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("I/O Error: " + e.getMessage());
+		}	
+		
+		
+		
 		// Try doing something with MongoDB
 		final Morphia morphia = new Morphia();
 
@@ -68,7 +105,46 @@ public class Main {
         datastore.getDB().dropDatabase();
         datastore.ensureIndexes();
 
-		try {
+		DateFormat df = new SimpleDateFormat("HH:mm:ss:SSS");
+		Date dateobj = new Date();
+		System.out.println(df.format(dateobj));	
+		
+		int totalTime = 0;
+		int totalReadings = 0;
+		
+		System.out.println("Start of vehicle position");
+		for (FeedEntity entity : vehiclePositionsFeedMessage.getEntityList()) {
+//			if (entity.getVehicle().getTrip().getRouteId().equals("24")) {
+				System.out.println(entity);	
+				
+				long theTimeStamp = entity.getVehicle().getTimestamp();
+//				System.out.println("Timestamp in long is :" + theTimeStamp); 
+				java.util.Date time=new java.util.Date((long)theTimeStamp*1000);					
+				
+				System.out.println("\n\nTime is: " + time);
+				//String dateFormatted = formatter.format(date);
+				System.out.println("Time of URL Request: " + df.format(dateobj));			
+				System.out.println("Differnce: " + (dateobj.getTime() - time.getTime())/1000);
+				
+				totalTime += (Math.abs((dateobj.getTime() - time.getTime())));
+				totalReadings++;
+				
+				VehiclePosition vp = new VehiclePosition(entity);
+		        datastore.save(vp);
+				
+//			}
+			
+			
+		}
+		
+		System.out.println("Total Time: " + totalTime/1000);
+		System.out.println("Total Readings: " + totalReadings);
+		System.out.println("Average seconds off: " + (totalTime/totalReadings)/1000);
+
+
+        
+        
+/*		try {
 			
 			// Sets the authenticator that will be used by the networking code
 		    // when a proxy or an HTTP server asks for authentication.
@@ -113,13 +189,13 @@ public class Main {
 			System.out.println("Total Readings: " + totalReadings);
 			System.out.println("Average seconds off: " + (totalTime/totalReadings)/1000);
 
-/*
+
 			for (FeedEntity entity : feed.getEntityList()) {
 				if (entity.hasTripUpdate()) {
 					System.out.println(entity.getTripUpdate());
 				}				
 			}
-*/
+
 
 			url = new URL("http://www.rtd-denver.com/google_sync/TripUpdate.pb");
 			feed = FeedMessage.parseFrom(url.openStream());		
@@ -131,7 +207,7 @@ public class Main {
 				
 			}
 			
-/*			
+			
 			// read text returned by server
 		    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 		    
@@ -140,7 +216,7 @@ public class Main {
 		    	System.out.println(line);
 		    }
 		    in.close();
-*/		    
+		    
 		}
 		catch (MalformedURLException e) {
 			System.out.println("Malformed URL: " + e.getMessage());
@@ -148,11 +224,11 @@ public class Main {
 		catch (IOException e) {
 			System.out.println("I/O Error: " + e.getMessage());
 		}	
-		
+*/		
 	}
 	
 	
-	public static class CustomAuthenticator extends Authenticator {
+/*	public static class CustomAuthenticator extends Authenticator {
 		private String username;
 		private String password;
 		
@@ -174,6 +250,6 @@ public class Main {
 			
 		}
 		
-	}
+	}*/
 	
 }

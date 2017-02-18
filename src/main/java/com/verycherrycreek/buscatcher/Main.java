@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
 import org.bson.types.ObjectId;
@@ -55,13 +56,14 @@ public class Main {
 
 		// Read properties file to get main configuration settings
 		Configuration configuration = new Configuration(CONFIG_PROPERTIES_FILE);
-		if (!configuration.getConfiguration()) {			
+		Properties props = configuration.getProps();
+		if (!configuration.loadProperties()) {			
 			System.out.print(ERROR_RETRIEVING_CONFIGURATION_FILE);
 			System.exit(1);
 		}
 		
 		// Check if using a valid Transit Authority		
-		String transitAuthorityProp = configuration.props.getProperty(Configuration.TRANSIT_AUTHORITY);
+		String transitAuthorityProp = props.getProperty(Configuration.TRANSIT_AUTHORITY);
 		busCatcherProperties.currentTransitAuthority = TransitAuthorityProperties.createTransitAuthorityEnum(transitAuthorityProp);
 		if (busCatcherProperties.currentTransitAuthority == TransitAuthorityProperties.TRANSIT_AUTHORITY.INVALID) {
 			System.out.print(ERROR_RETRIEVING_CONFIGURATION_FILE);
@@ -71,14 +73,14 @@ public class Main {
 		// TODO populate properties for execution
 		
 		
-		// Get Transit Authority using identifier from properties		
-		String transitAuthorityConfigFileProp = configuration.props.getProperty(Configuration.TRANSIT_AUTHORITY_RESOURCE_NAME);
+		// Get Transit Authority using identifier from properties	
+		String transitAuthorityConfigFileProp = props.getProperty(Configuration.TRANSIT_AUTHORITY_RESOURCE_NAME);
 		TransitAuthorityI transitAuthority = TransitAuthorityFactory.createTransitAuthority(busCatcherProperties.currentTransitAuthority,transitAuthorityConfigFileProp);
 		
-		String rtdUsername = configuration.props.getProperty(configuration.RTD_USER_NAME);
-		String rtdPassword = configuration.props.getProperty(configuration.RTD_PASSWORD);
-
 		// Currently seting password from main config file to keep it from Github for now
+		String rtdUsername = props.getProperty(configuration.RTD_USER_NAME);
+		String rtdPassword = props.getProperty(configuration.RTD_PASSWORD);
+
 		transitAuthority.setPassword(rtdPassword);
 		transitAuthority.setUsername(rtdUsername);
 		

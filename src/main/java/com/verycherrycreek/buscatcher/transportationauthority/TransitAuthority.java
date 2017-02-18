@@ -23,7 +23,7 @@ public abstract class TransitAuthority {
 	protected Properties props;
 	
 	/**
-	 * @param identifier
+	 * @param identifier Identifies the Transit Authority represented
 	 * @param configFileName
 	 */
 	public TransitAuthority(TRANSIT_AUTHORITY identifier, String resourceName) {

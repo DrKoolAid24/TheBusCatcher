@@ -54,7 +54,7 @@ public class TransitAuthorityRTD extends TransitAuthority implements TransitAuth
 	 * @see com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityI#getVehiclePositions()
 	 */
 	@Override
-	public FeedMessage getVehiclePositions() throws MalformedURLException, IOException {
+	public FeedMessage getVehiclePositions() {
 
 		FeedMessage vehiclePositionFeedMessage = null;
 		// Sets the authenticator that will be used by the networking code

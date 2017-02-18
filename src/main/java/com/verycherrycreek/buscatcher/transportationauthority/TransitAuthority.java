@@ -24,7 +24,7 @@ public abstract class TransitAuthority {
 	
 	/**
 	 * @param identifier Identifies the Transit Authority represented
-	 * @param configFileName
+	 * @param resourceName Name of resource (properties file) that will be used to configure the TransitAuthority
 	 */
 	public TransitAuthority(TRANSIT_AUTHORITY identifier, String resourceName) {
 		super();

@@ -22,7 +22,7 @@ public interface TransitAuthorityI {
 	 * 
 	 * @return FeedMessage Contains All current Vehicle Positions available
 	 */
-	public FeedMessage getVehiclePositions()throws MalformedURLException,IOException;
+	public FeedMessage getVehiclePositions() throws MalformedURLException,IOException;
 	
 	
 	/**

@@ -23,10 +23,10 @@ public abstract class Datastore {
 	protected String resourceName;
 	protected Properties props;
 	
+
 	/**
-	 * @param datastoreTechnology Identifies the storage technology used to save the data to
-	 * @param resourceName Name of resource (properties file) that will be used to configure the Datastore
-	 * @param props Properties file that contains the configuration values of the Datastore
+	 * @param pDatastoreTechnology
+	 * @param pResourceName
 	 */
 	public Datastore(DATASTORE_TECHNOLOGY pDatastoreTechnology, String pResourceName) {
 		this.datastoreTechnology = pDatastoreTechnology;

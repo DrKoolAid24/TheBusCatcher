@@ -18,7 +18,6 @@ import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityPr
  */
 public abstract class Datastore {
 
-	
 	// Key that identifies the type of TransitAuthority
 	public DATASTORE_TECHNOLOGY datastoreTechnology;
 	protected String resourceName;
@@ -29,9 +28,9 @@ public abstract class Datastore {
 	 * @param resourceName Name of resource (properties file) that will be used to configure the Datastore
 	 * @param props Properties file that contains the configuration values of the Datastore
 	 */
-	public Datastore(DATASTORE_TECHNOLOGY pDatastoreTechnology, String resourceName) {
+	public Datastore(DATASTORE_TECHNOLOGY pDatastoreTechnology, String pResourceName) {
 		this.datastoreTechnology = pDatastoreTechnology;
-		this.resourceName = resourceName;
+		this.resourceName = pResourceName;
 	}
 
 	protected boolean getConfiguration() {

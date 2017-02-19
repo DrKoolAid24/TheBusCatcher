@@ -5,7 +5,8 @@
  *-------------------------------------------------------------------------*/
 package com.verycherrycreek.buscatcher;
 
-import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityProperties.TRANSIT_AUTHORITY;
+import java.util.Properties;
+
 
 /**
  * @author skilker
@@ -17,18 +18,34 @@ import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityPr
  *
  */
 public class BusCatcherProperties {
-
-
 	
 	// Transit Authority properties
-	protected TRANSIT_AUTHORITY currentTransitAuthority;
-	
-	// Database properties
-	protected String currentDatabaseName;
-	protected String currentVehiclePositionTableName;
-	protected String currentTripUpdateTableName;
-	
-	
+	private Properties transitAuthorityProps;
+	private Properties datastoreProps;
+	/**
+	 * @return the transitAuthorityProps
+	 */
+	public Properties getTransitAuthorityProps() {
+		return transitAuthorityProps;
+	}
+	/**
+	 * @param transitAuthorityProps the transitAuthorityProps to set
+	 */
+	public void setTransitAuthorityProps(Properties transitAuthorityProps) {
+		this.transitAuthorityProps = transitAuthorityProps;
+	}
+	/**
+	 * @return the datastoreProps
+	 */
+	public Properties getDatastoreProps() {
+		return datastoreProps;
+	}
+	/**
+	 * @param datastoreProps the datastoreProps to set
+	 */
+	public void setDatastoreProps(Properties datastoreProps) {
+		this.datastoreProps = datastoreProps;
+	}
 
-	
+
 }

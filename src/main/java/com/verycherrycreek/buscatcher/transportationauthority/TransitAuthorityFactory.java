@@ -13,11 +13,11 @@ import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityPr
  */
 public class TransitAuthorityFactory {
 	
-	static public TransitAuthorityI createTransitAuthority(TRANSIT_AUTHORITY pTransitAuthority, String pConfigFileName) {
-		TransitAuthorityI TA = null;
+	static public TransitAuthorityI createTransitAuthority(TRANSIT_AUTHORITY pTransitAuthority, String pResourceName) {
+		TransitAuthorityI retTransitAuthority = null;
 		if (pTransitAuthority.RTD == TRANSIT_AUTHORITY.RTD) {
-			TA = new TransitAuthorityRTD(pTransitAuthority, pConfigFileName);
+			retTransitAuthority = new RTDTransitAuthority(pTransitAuthority, pResourceName);
 		}
-		return TA;
+		return retTransitAuthority;
 	}
 }

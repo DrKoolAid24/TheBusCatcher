@@ -16,9 +16,11 @@ import java.util.Properties;
 public class Configuration { 
 	public static final String RTD_USER_NAME = "rtdusername";
 	public static final String RTD_PASSWORD = "rtdpassword";
-	public static final String TRANSIT_AUTHORITY = "transitauthority";
+	public static final String TRANSIT_AUTHORITY_NAME = "transitauthorityname";
 	public static final String TRANSIT_AUTHORITY_RESOURCE_NAME = "transitauthorityresourcename";
-
+	public static final String DATASTORE_TECHNOLOGY_NAME = "datastoretechnologyname";
+	public static final String DATASTORE_TECHNOLOGY_RESOURCE_NAME = "datastoretechnologyresourcename";
+	
 	private String resourceName;
 	private Properties props;
 

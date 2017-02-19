@@ -39,219 +39,105 @@ import org.mongodb.morphia.annotations.Reference;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.mongodb.MongoClient;
+import com.verycherrycreek.buscatcher.datastore.DatastoreFactory;
+import com.verycherrycreek.buscatcher.datastore.DatastoreI;
+import com.verycherrycreek.buscatcher.datastore.DatastoreProperties;
+import com.verycherrycreek.buscatcher.datastore.DatastoreProperties.DATASTORE_TECHNOLOGY;
+import com.verycherrycreek.buscatcher.datastore.VehiclePosition;
 import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityFactory;
 import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityI;
 import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityProperties;
 
 public class Main {
-	
+
 	private static String CONFIG_PROPERTIES_FILE = "config.properties";
 	private static String ERROR_RETRIEVING_CONFIGURATION_FILE = "Error occured retrieving configuration file";
 	private static String INVALID_TRANSIT_AUTHORITY = "Invalid Transit Authority found";
-		
+	private static String INVALID_DATASTORE_TECHNOLOGY = "Invalid Datastore Technology found";
+
 	public static void main(String[] args) {
-		
+
 		// Create BusCatcherProperties to manage execution properties
 		BusCatcherProperties busCatcherProperties = new BusCatcherProperties();
 
 		// Read properties file to get main configuration settings
 		Configuration configuration = new Configuration(CONFIG_PROPERTIES_FILE);
-		Properties props = configuration.getProps();
-		if (!configuration.loadProperties()) {			
+		if (!configuration.loadProperties()) {
 			System.out.print(ERROR_RETRIEVING_CONFIGURATION_FILE);
 			System.exit(1);
 		}
-		
-		// Check if using a valid Transit Authority		
-		String transitAuthorityProp = props.getProperty(Configuration.TRANSIT_AUTHORITY);
-		busCatcherProperties.currentTransitAuthority = TransitAuthorityProperties.createTransitAuthorityEnum(transitAuthorityProp);
-		if (busCatcherProperties.currentTransitAuthority == TransitAuthorityProperties.TRANSIT_AUTHORITY.INVALID) {
-			System.out.print(ERROR_RETRIEVING_CONFIGURATION_FILE);
-			System.exit(1);			
+		Properties configurationProps = configuration.getProps();
+
+		// Check if using a valid Transit Authority
+		String transitAuthorityName = configurationProps
+				.getProperty(Configuration.TRANSIT_AUTHORITY_NAME);
+		TransitAuthorityProperties.TRANSIT_AUTHORITY currentTransitAuthority = TransitAuthorityProperties
+				.createTransitAuthorityEnum(transitAuthorityName);
+		if (currentTransitAuthority == TransitAuthorityProperties.TRANSIT_AUTHORITY.INVALID) {
+			System.out.print(INVALID_TRANSIT_AUTHORITY);
+			System.exit(1);
 		}
-		
+
 		// TODO populate properties for execution
-		
-		
-		// Get Transit Authority using identifier from properties	
-		String transitAuthorityConfigFileProp = props.getProperty(Configuration.TRANSIT_AUTHORITY_RESOURCE_NAME);
-		TransitAuthorityI transitAuthority = TransitAuthorityFactory.createTransitAuthority(busCatcherProperties.currentTransitAuthority,transitAuthorityConfigFileProp);
-		
-		// Currently seting password from main config file to keep it from Github for now
-		String rtdUsername = props.getProperty(configuration.RTD_USER_NAME);
-		String rtdPassword = props.getProperty(configuration.RTD_PASSWORD);
+
+		// Get Transit Authority using identifier from properties
+		String transitAuthorityResourceName = configurationProps
+				.getProperty(Configuration.TRANSIT_AUTHORITY_RESOURCE_NAME);
+		TransitAuthorityI transitAuthority = TransitAuthorityFactory
+				.createTransitAuthority(currentTransitAuthority,
+						transitAuthorityResourceName);
+
+		// Currently seting password from main config file to keep it from
+		// Github for now
+		String rtdUsername = configurationProps
+				.getProperty(configuration.RTD_USER_NAME);
+		String rtdPassword = configurationProps
+				.getProperty(configuration.RTD_PASSWORD);
 
 		transitAuthority.setPassword(rtdPassword);
 		transitAuthority.setUsername(rtdUsername);
+
+		// Configure the Datastore to be used for storing the data retrieved
+		// from the Transit Authority
+		// Check if using a valid Transit Authority
+		String datastoreName = configurationProps
+				.getProperty(Configuration.DATASTORE_TECHNOLOGY_NAME);
+		DATASTORE_TECHNOLOGY currentDatastoreTechnology = DatastoreProperties
+				.createDatastoreTechnologyEnum(datastoreName);
+		if (currentDatastoreTechnology == DatastoreProperties.DATASTORE_TECHNOLOGY.INVALID) {
+			System.out.print(INVALID_DATASTORE_TECHNOLOGY);
+			System.exit(1);
+		}
+
+		// Get Datastore resource name from properties
+		String datastoreResourceName = configurationProps
+				.getProperty(Configuration.DATASTORE_TECHNOLOGY_RESOURCE_NAME);
+		DatastoreI datastore = DatastoreFactory.createDatastore(
+				currentDatastoreTechnology, datastoreResourceName);
+
 		
+		//TODO refactor this into a new Transformation type of object that knows how to get data from Transit Authority, transform it into data that the Datastore can write
+		
+		// Get FeedMessage with VehiclePositions, convert to array, and update the DB
 		FeedMessage vehiclePositionsFeedMessage = null;
 		try {
 			vehiclePositionsFeedMessage = transitAuthority.getVehiclePositions();
+
+			ArrayList<VehiclePosition> vehiclePositions = new ArrayList<VehiclePosition>();
+			for (FeedEntity entity : vehiclePositionsFeedMessage.getEntityList()) {
+				VehiclePosition vp = new VehiclePosition(entity);
+				vehiclePositions.add(vp);
+			}
+
+			datastore.updateVehiclePositions(vehiclePositions);
+		
 		} catch (MalformedURLException e) {
 			System.out.println("Malformed URL: " + e.getMessage());
 		} catch (IOException e) {
 			System.out.println("I/O Error: " + e.getMessage());
-		}	
-		
-		
-		
-		// Try doing something with MongoDB
-		final Morphia morphia = new Morphia();
-
-		// tell Morphia where to find your classes
-		// can be called multiple times with different packages or classes
-		morphia.mapPackage("org.mongodb.morphia.example");
-
-		// create the Datastore connecting to the default port on the local host
-		final Datastore datastore = morphia.createDatastore(new MongoClient(), "rtd_example");
-        datastore.getDB().dropDatabase();
-        datastore.ensureIndexes();
-
-		DateFormat df = new SimpleDateFormat("HH:mm:ss:SSS");
-		Date dateobj = new Date();
-		System.out.println(df.format(dateobj));	
-		
-		int totalTime = 0;
-		int totalReadings = 0;
-		
-		System.out.println("Start of vehicle position");
-		for (FeedEntity entity : vehiclePositionsFeedMessage.getEntityList()) {
-//			if (entity.getVehicle().getTrip().getRouteId().equals("24")) {
-				System.out.println(entity);	
-				
-				long theTimeStamp = entity.getVehicle().getTimestamp();
-//				System.out.println("Timestamp in long is :" + theTimeStamp); 
-				java.util.Date time=new java.util.Date((long)theTimeStamp*1000);					
-				
-				System.out.println("\n\nTime is: " + time);
-				//String dateFormatted = formatter.format(date);
-				System.out.println("Time of URL Request: " + df.format(dateobj));			
-				System.out.println("Differnce: " + (dateobj.getTime() - time.getTime())/1000);
-				
-				totalTime += (Math.abs((dateobj.getTime() - time.getTime())));
-				totalReadings++;
-				
-				VehiclePosition vp = new VehiclePosition(entity);
-		        datastore.save(vp);
-				
-//			}
-			
-			
 		}
-		
-		System.out.println("Total Time: " + totalTime/1000);
-		System.out.println("Total Readings: " + totalReadings);
-		System.out.println("Average seconds off: " + (totalTime/totalReadings)/1000);
 
 
-        
-        
-/*		try {
-			
-			// Sets the authenticator that will be used by the networking code
-		    // when a proxy or an HTTP server asks for authentication.
-			Authenticator.setDefault(new CustomAuthenticator(rtdUsername, rtdPassword));
-			
-			URL url = new URL("http://www.rtd-denver.com/google_sync/VehiclePosition.pb");
-			FeedMessage feed = FeedMessage.parseFrom(url.openStream());		
-
-			DateFormat df = new SimpleDateFormat("HH:mm:ss:SSS");
-			Date dateobj = new Date();
-			System.out.println(df.format(dateobj));	
-			
-			int totalTime = 0;
-			int totalReadings = 0;
-			
-			System.out.println("Start of vehicle position");
-			for (FeedEntity entity : feed.getEntityList()) {
-//				if (entity.getVehicle().getTrip().getRouteId().equals("24")) {
-					System.out.println(entity);	
-					
-					long theTimeStamp = entity.getVehicle().getTimestamp();
-//					System.out.println("Timestamp in long is :" + theTimeStamp); 
-					java.util.Date time=new java.util.Date((long)theTimeStamp*1000);					
-					
-					System.out.println("\n\nTime is: " + time);
-					//String dateFormatted = formatter.format(date);
-					System.out.println("Time of URL Request: " + df.format(dateobj));			
-					System.out.println("Differnce: " + (dateobj.getTime() - time.getTime())/1000);
-					
-					totalTime += (Math.abs((dateobj.getTime() - time.getTime())));
-					totalReadings++;
-					
-					VehiclePosition vp = new VehiclePosition(entity);
-			        datastore.save(vp);
-					
-//				}
-				
-				
-			}
-			
-			System.out.println("Total Time: " + totalTime/1000);
-			System.out.println("Total Readings: " + totalReadings);
-			System.out.println("Average seconds off: " + (totalTime/totalReadings)/1000);
-
-
-			for (FeedEntity entity : feed.getEntityList()) {
-				if (entity.hasTripUpdate()) {
-					System.out.println(entity.getTripUpdate());
-				}				
-			}
-
-
-			url = new URL("http://www.rtd-denver.com/google_sync/TripUpdate.pb");
-			feed = FeedMessage.parseFrom(url.openStream());		
-			System.out.println("Start of Trip Update");
-			for (FeedEntity entity : feed.getEntityList()) {
-				if (entity.getTripUpdate().getTrip().getRouteId().equals("24")) {
-					System.out.println(entity);					
-				}
-				
-			}
-			
-			
-			// read text returned by server
-		    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-		    
-		    String line;
-		    while ((line = in.readLine()) != null) {
-		    	System.out.println(line);
-		    }
-		    in.close();
-		    
-		}
-		catch (MalformedURLException e) {
-			System.out.println("Malformed URL: " + e.getMessage());
-		}
-		catch (IOException e) {
-			System.out.println("I/O Error: " + e.getMessage());
-		}	
-*/		
 	}
-	
-	
-/*	public static class CustomAuthenticator extends Authenticator {
-		private String username;
-		private String password;
-		
-		public CustomAuthenticator(String pUsername, String pPassword) {
-			username = pUsername;
-			password = pPassword;
-		}
-		// Called when password authorization is needed
-		protected PasswordAuthentication getPasswordAuthentication() {
-			
-			// Get information about the request
-			String prompt = getRequestingPrompt();
-			String hostname = getRequestingHost();
-			InetAddress ipaddr = getRequestingSite();
-			int port = getRequestingPort();
 
-			// Return the information (a data holder that is used by Authenticator)
-			return new PasswordAuthentication(username, password.toCharArray());
-			
-		}
-		
-	}*/
-	
 }

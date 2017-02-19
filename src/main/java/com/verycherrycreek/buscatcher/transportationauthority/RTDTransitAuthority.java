@@ -16,14 +16,13 @@ import java.util.Date;
 
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
-import com.verycherrycreek.buscatcher.VehiclePosition;
 import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityProperties.TRANSIT_AUTHORITY;
 
 /**
  * @author skilker
  *
  */
-public class TransitAuthorityRTD extends TransitAuthority implements TransitAuthorityI {
+public class RTDTransitAuthority extends TransitAuthority implements TransitAuthorityI {
 	
 	private String username;
 	private String password;
@@ -38,7 +37,7 @@ public class TransitAuthorityRTD extends TransitAuthority implements TransitAuth
 	 * @param pIdentifier Identifies the TransitAuthority
 	 * @param pResourceName Name of the resource file that will be used to load the initial configuration
 	 */
-	public TransitAuthorityRTD(TRANSIT_AUTHORITY pIdentifier, String pResourceName) {
+	public RTDTransitAuthority(TRANSIT_AUTHORITY pIdentifier, String pResourceName) {
 		super(pIdentifier, pResourceName);
 		if (super.getConfiguration()) {
 			username = props.getProperty(TransitAuthorityProperties.USER_NAME);

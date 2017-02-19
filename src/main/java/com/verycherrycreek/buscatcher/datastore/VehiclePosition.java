@@ -1,4 +1,4 @@
-package com.verycherrycreek.buscatcher;
+package com.verycherrycreek.buscatcher.datastore;
 
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;

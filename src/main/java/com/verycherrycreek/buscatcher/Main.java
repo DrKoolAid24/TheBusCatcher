@@ -137,6 +137,7 @@ public class Main {
 			System.out.println("I/O Error: " + e.getMessage());
 		}
 
+		datastore.closeDatastoreConnection();
 
 	}
 

@@ -70,4 +70,14 @@ public class MongoDBDatastore extends Datastore implements DatastoreI {
 		return false;
 	}
 
+
+	/* (non-Javadoc)
+	 * @see com.verycherrycreek.buscatcher.datastore.DatastoreI#closeDatastoreConnection()
+	 */
+	@Override
+	public void closeDatastoreConnection() {
+		// TODO Auto-generated method stub		
+		mongoDatastore.getMongo().close();
+	}
+
 }

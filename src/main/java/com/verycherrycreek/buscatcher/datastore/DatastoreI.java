@@ -17,4 +17,6 @@ public interface DatastoreI {
 	
 	public boolean updateTripUpdates(ArrayList<TripUpdate> pTripUpdates);
 	
+	public void closeDatastoreConnection();
+	
 }

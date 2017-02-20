@@ -39,6 +39,8 @@ import org.mongodb.morphia.annotations.Reference;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.mongodb.MongoClient;
+import com.verycherrycreek.buscatcher.converter.ConverterI;
+import com.verycherrycreek.buscatcher.converter.RTDtoMongoDBConverter;
 import com.verycherrycreek.buscatcher.datastore.DatastoreFactory;
 import com.verycherrycreek.buscatcher.datastore.DatastoreI;
 import com.verycherrycreek.buscatcher.datastore.DatastoreProperties;
@@ -116,27 +118,13 @@ public class Main {
 				currentDatastoreTechnology, datastoreResourceName);
 
 		
-		//TODO refactor this into a new Transformation type of object that knows how to get data from Transit Authority, transform it into data that the Datastore can write
+		datastore.openDatastoreConnection();
 		
-		// Get FeedMessage with VehiclePositions, convert to array, and update the DB
-		FeedMessage vehiclePositionsFeedMessage = null;
-		try {
-			vehiclePositionsFeedMessage = transitAuthority.getVehiclePositions();
-
-			ArrayList<VehiclePosition> vehiclePositions = new ArrayList<VehiclePosition>();
-			for (FeedEntity entity : vehiclePositionsFeedMessage.getEntityList()) {
-				VehiclePosition vp = new VehiclePosition(entity);
-				vehiclePositions.add(vp);
-			}
-
-			datastore.updateVehiclePositions(vehiclePositions);
+		//TODO add ConvertFactory object to create special conversion logic - just using RTDtoMongo for now
+		ConverterI rtdToMongoDBConverter = new RTDtoMongoDBConverter(transitAuthority, datastore);
+		rtdToMongoDBConverter.executeConversion();
 		
-		} catch (MalformedURLException e) {
-			System.out.println("Malformed URL: " + e.getMessage());
-		} catch (IOException e) {
-			System.out.println("I/O Error: " + e.getMessage());
-		}
-
+		
 		datastore.closeDatastoreConnection();
 
 	}

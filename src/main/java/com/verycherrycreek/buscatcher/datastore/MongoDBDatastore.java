@@ -38,11 +38,6 @@ public class MongoDBDatastore extends Datastore implements DatastoreI {
 			tripUpdateCollectionName = props.getProperty(DatastoreProperties.TRIP_UPDATE_COLLECTION_NAME);
 		}
 		
-		morphia = new Morphia();
-		morphia.mapPackage("com.verycherrycreek.buscatcher.datastore");
-		mongoDatastore = morphia.createDatastore(new MongoClient(), dbName);
-		mongoDatastore.getDB().dropDatabase();
-		mongoDatastore.ensureIndexes();
 	}
 
 
@@ -52,6 +47,8 @@ public class MongoDBDatastore extends Datastore implements DatastoreI {
 	@Override
 	public boolean updateVehiclePositions(ArrayList<VehiclePosition> pVehiclePositions) {
 		boolean retResult = false;
+		
+		//TODO check that collection exists before dropping it
 		mongoDatastore.getDB().getCollection(vehiclePositionCollectionName).drop();
 		for (VehiclePosition vehiclePosition : pVehiclePositions) {
 			mongoDatastore.save(vehiclePosition);
@@ -75,9 +72,30 @@ public class MongoDBDatastore extends Datastore implements DatastoreI {
 	 * @see com.verycherrycreek.buscatcher.datastore.DatastoreI#closeDatastoreConnection()
 	 */
 	@Override
-	public void closeDatastoreConnection() {
+	public boolean closeDatastoreConnection() {
 		// TODO Auto-generated method stub		
 		mongoDatastore.getMongo().close();
+		// Returning true for this instance.  Other instances may have it set with logic
+		return true;
 	}
 
+
+	/* (non-Javadoc)
+	 * @see com.verycherrycreek.buscatcher.datastore.DatastoreI#openDatastoreConnection()
+	 */
+	@Override
+	public boolean openDatastoreConnection() {
+		boolean retValue = false;
+		morphia = new Morphia();
+		morphia.mapPackage("com.verycherrycreek.buscatcher.datastore");
+		mongoDatastore = morphia.createDatastore(new MongoClient(), dbName);
+		//TODO Check that DB connection is working and ready.
+		mongoDatastore.getDB().dropDatabase();
+		mongoDatastore.ensureIndexes();
+		
+		//TODO Check that DB connection is working and ready.
+		return retValue;
+	}
+
+	
 }

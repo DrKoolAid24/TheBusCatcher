@@ -10,5 +10,7 @@ package com.verycherrycreek.buscatcher.converter;
  *
  */
 public interface ConverterI {
+	
+	public void executeConversion();
 
 }

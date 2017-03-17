@@ -56,6 +56,15 @@ public class MongoDBDatastore extends Datastore implements DatastoreI {
 		}
 		return retResult;
 	}
+	
+	/* (non-Javadoc)
+	 * @see com.verycherrycreek.buscatcher.datastore.DatastoreI#dropVehiclePositions()
+	 */
+	@Override
+	public void dropVehiclePositions() {
+		mongoDatastore.getDB().getCollection(vehiclePositionCollectionName).drop();
+	}
+
 
 
 	/* (non-Javadoc)
@@ -72,6 +81,14 @@ public class MongoDBDatastore extends Datastore implements DatastoreI {
 			retResult = true;
 		}
 		return retResult;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.verycherrycreek.buscatcher.datastore.DatastoreI#dropTripUpdates()
+	 */
+	@Override
+	public void dropTripUpdates() {
+		mongoDatastore.getDB().getCollection(tripUpdateCollectionName).drop();
 	}
 
 

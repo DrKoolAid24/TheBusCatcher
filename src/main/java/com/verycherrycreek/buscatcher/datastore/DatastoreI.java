@@ -19,6 +19,10 @@ public interface DatastoreI {
 	
 	public boolean closeDatastoreConnection();
 	
-	public boolean openDatastoreConnection(); 
+	public boolean openDatastoreConnection();
+
+	public void dropTripUpdates();
+
+	public void dropVehiclePositions(); 
 	
 }

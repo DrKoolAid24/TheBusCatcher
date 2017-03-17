@@ -37,6 +37,10 @@ public class RTDtoMongoDBConverter extends Converter implements ConverterI {
 	@Override
 	public void executeConversion() {
 
+		
+		// Drop VehiclePositions
+		datastore.dropVehiclePositions();
+		
 		// Get FeedMessage with VehiclePositions, convert to array, and update the DB
 		FeedMessage vehiclePositionsFeedMessage = null;
 		try {
@@ -55,6 +59,9 @@ public class RTDtoMongoDBConverter extends Converter implements ConverterI {
 			System.out.println("I/O Error: " + e.getMessage());
 		}	
 		
+		// Drop TripUpdates
+		datastore.dropTripUpdates();
+
 		// Get FeedMessage with VehiclePositions, convert to array, and update the DB
 		FeedMessage tripUpdateFeedMessage = null;
 		try {

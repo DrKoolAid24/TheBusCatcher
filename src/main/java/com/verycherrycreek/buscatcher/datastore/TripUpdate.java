@@ -6,7 +6,7 @@ import org.mongodb.morphia.annotations.Id;
 
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 
-@Entity("trip_updates")
+@Entity("tripupdates")
 public class TripUpdate {
     @Id
     private ObjectId id;

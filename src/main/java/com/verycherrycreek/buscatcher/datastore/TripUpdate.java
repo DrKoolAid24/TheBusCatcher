@@ -6,39 +6,26 @@ import org.mongodb.morphia.annotations.Id;
 
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 
-@Entity("TripUpdates")
+@Entity("trip_updates")
 public class TripUpdate {
     @Id
     private ObjectId id;
-    private String vehicleId;
+
     private String tripId;
     private String scheduleRelationship;
     private String routeId;
     private int directionId;
-    private double latitude;
-    private double longitude;
-    private float bearing;
-    private String currentStatus;
-    private long timestamp;
-    private String stopId;
 
     public TripUpdate() {
     }
 
     public TripUpdate(FeedEntity pFeedEntity) {
-        this.vehicleId = pFeedEntity.getVehicle().getVehicle().getId();
-        // Trip Updates
-        this.tripId = pFeedEntity.getVehicle().getTrip().getTripId();
-        this.scheduleRelationship = pFeedEntity.getVehicle().getTrip().getScheduleRelationship().toString();
-        this.routeId = pFeedEntity.getVehicle().getTrip().getRouteId();
+    	
+    	//TODO refactor to be more efficient and use one getTrip to get the TripUpdate and resuse it
+    	this.tripId = pFeedEntity.getTripUpdate().getTrip().getTripId();
+    	this.scheduleRelationship = pFeedEntity.getTripUpdate().getTrip().getScheduleRelationship().toString();
+    	this.routeId = pFeedEntity.getTripUpdate().getTrip().getRouteId();
         this.directionId = pFeedEntity.getVehicle().getTrip().getDirectionId();
-        this.latitude = pFeedEntity.getVehicle().getPosition().getLatitude();
-        this.longitude = pFeedEntity.getVehicle().getPosition().getLongitude();
-        this.bearing = pFeedEntity.getVehicle().getPosition().getBearing();
-        this.currentStatus = pFeedEntity.getVehicle().getCurrentStatus().toString();
-        this.timestamp = pFeedEntity.getVehicle().getTimestamp();
-        this.stopId = pFeedEntity.getVehicle().getStopId();   
-        
     }
     public ObjectId getId() {
         return id;

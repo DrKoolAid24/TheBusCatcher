@@ -118,6 +118,7 @@ public class Main {
 				currentDatastoreTechnology, datastoreResourceName);
 
 		
+		//TODO figure out how to open existing connection and make sure it is running - do NOT drop the DB again :-(
 		datastore.openDatastoreConnection();
 		
 		//TODO add ConvertFactory object to create special conversion logic - just using RTDtoMongo for now

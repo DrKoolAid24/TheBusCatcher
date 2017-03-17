@@ -31,7 +31,7 @@ public interface TransitAuthorityI {
 	 * 
 	 * @return FeedMessage Contains All current Trip Updates available
 	 */
-	public FeedMessage getTripUpdates();
+	public FeedMessage getTripUpdates() throws MalformedURLException,IOException;
 	
 	public void setUsername(String pUsername);
 	

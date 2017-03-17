@@ -71,9 +71,18 @@ public class RTDTransitAuthority extends TransitAuthority implements TransitAuth
 	 * @see com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityI#getTripUpdates()
 	 */
 	@Override
-	public FeedMessage getTripUpdates() {
+	public FeedMessage getTripUpdates() throws MalformedURLException, IOException {
+		
 		// TODO Auto-generated method stub
-		return null;
+		FeedMessage tripUpdateFeedMessage = null;
+		// Sets the authenticator that will be used by the networking code
+	    // when a proxy or an HTTP server asks for authentication.
+		Authenticator.setDefault(new CustomAuthenticator(username, password));
+		
+		URL url = new URL(tripUpdateUrl);
+		tripUpdateFeedMessage = FeedMessage.parseFrom(url.openStream());		
+		
+		return tripUpdateFeedMessage;
 	}
 
 	/**

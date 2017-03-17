@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.verycherrycreek.buscatcher.datastore.DatastoreI;
+import com.verycherrycreek.buscatcher.datastore.TripUpdate;
 import com.verycherrycreek.buscatcher.datastore.VehiclePosition;
 import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityI;
 
@@ -47,6 +48,24 @@ public class RTDtoMongoDBConverter extends Converter implements ConverterI {
 				vehiclePositions.add(vp);
 			}
 			datastore.updateVehiclePositions(vehiclePositions);
+		
+		} catch (MalformedURLException e) {
+			System.out.println("Malformed URL: " + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("I/O Error: " + e.getMessage());
+		}	
+		
+		// Get FeedMessage with VehiclePositions, convert to array, and update the DB
+		FeedMessage tripUpdateFeedMessage = null;
+		try {
+			tripUpdateFeedMessage = transitAuthority.getTripUpdates();
+
+			ArrayList<TripUpdate> tripUpdates = new ArrayList<TripUpdate>();
+			for (FeedEntity entity : tripUpdateFeedMessage.getEntityList()) {
+				TripUpdate tu = new TripUpdate(entity);
+				tripUpdates.add(tu);
+			}
+			datastore.updateTripUpdates(tripUpdates);
 		
 		} catch (MalformedURLException e) {
 			System.out.println("Malformed URL: " + e.getMessage());

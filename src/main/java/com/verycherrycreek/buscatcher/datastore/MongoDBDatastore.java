@@ -63,8 +63,15 @@ public class MongoDBDatastore extends Datastore implements DatastoreI {
 	 */
 	@Override
 	public boolean updateTripUpdates(ArrayList<TripUpdate> pTripUpdates) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean retResult = false;
+		
+		//TODO check that collection exists before dropping it
+		mongoDatastore.getDB().getCollection(tripUpdateCollectionName).drop();
+		for (TripUpdate tripUpdate : pTripUpdates) {
+			mongoDatastore.save(tripUpdate);
+			retResult = true;
+		}
+		return retResult;
 	}
 
 
@@ -90,7 +97,7 @@ public class MongoDBDatastore extends Datastore implements DatastoreI {
 		morphia.mapPackage("com.verycherrycreek.buscatcher.datastore");
 		mongoDatastore = morphia.createDatastore(new MongoClient(), dbName);
 		//TODO Check that DB connection is working and ready.
-		mongoDatastore.getDB().dropDatabase();
+		//mongoDatastore.getDB().dropDatabase();
 		mongoDatastore.ensureIndexes();
 		
 		//TODO Check that DB connection is working and ready.

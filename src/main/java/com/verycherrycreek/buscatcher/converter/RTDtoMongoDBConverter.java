@@ -11,9 +11,11 @@ import java.util.ArrayList;
 
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
+import com.verycherrycreek.buscatcher.datastore.Datastore;
 import com.verycherrycreek.buscatcher.datastore.DatastoreI;
 import com.verycherrycreek.buscatcher.datastore.TripUpdate;
 import com.verycherrycreek.buscatcher.datastore.VehiclePosition;
+import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthority;
 import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityI;
 
 /**
@@ -36,7 +38,8 @@ public class RTDtoMongoDBConverter extends Converter implements ConverterI {
 	 */
 	@Override
 	public void executeConversion() {
-
+		
+		datastore.openDatastoreConnection();
 		
 		// Drop VehiclePositions
 		datastore.dropVehiclePositions();
@@ -78,7 +81,9 @@ public class RTDtoMongoDBConverter extends Converter implements ConverterI {
 			System.out.println("Malformed URL: " + e.getMessage());
 		} catch (IOException e) {
 			System.out.println("I/O Error: " + e.getMessage());
-		}		
+		}	
+		
+		datastore.closeDatastoreConnection();
 	}
 
 }

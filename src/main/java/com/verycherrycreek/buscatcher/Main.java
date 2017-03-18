@@ -39,6 +39,7 @@ import org.mongodb.morphia.annotations.Reference;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.mongodb.MongoClient;
+import com.verycherrycreek.buscatcher.converter.ConverterFactory;
 import com.verycherrycreek.buscatcher.converter.ConverterI;
 import com.verycherrycreek.buscatcher.converter.RTDtoMongoDBConverter;
 import com.verycherrycreek.buscatcher.datastore.DatastoreFactory;
@@ -116,18 +117,10 @@ public class Main {
 				.getProperty(Configuration.DATASTORE_TECHNOLOGY_RESOURCE_NAME);
 		DatastoreI datastore = DatastoreFactory.createDatastore(
 				currentDatastoreTechnology, datastoreResourceName);
-
+	
 		
-		//TODO figure out how to open existing connection and make sure it is running - do NOT drop the DB again :-(
-		datastore.openDatastoreConnection();
-		
-		//TODO add ConvertFactory object to create special conversion logic - just using RTDtoMongo for now
-		ConverterI rtdToMongoDBConverter = new RTDtoMongoDBConverter(transitAuthority, datastore);
-		rtdToMongoDBConverter.executeConversion();
-		
-		
-		datastore.closeDatastoreConnection();
-
+		ConverterI converter = ConverterFactory.createConverter(transitAuthority, datastore);
+		converter.executeConversion();
 	}
 
 }

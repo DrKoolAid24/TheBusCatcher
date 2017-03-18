@@ -18,7 +18,7 @@ import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityPr
  */
 public abstract class Datastore {
 
-	// Key that identifies the type of TransitAuthority
+	// Key that identifies the type of data storage
 	public DATASTORE_TECHNOLOGY datastoreTechnology;
 	protected String resourceName;
 	protected Properties props;
@@ -47,5 +47,8 @@ public abstract class Datastore {
 		return retVal;
 	}
 	
+	public DATASTORE_TECHNOLOGY getDatastoreTechnology() {
+		return datastoreTechnology;
+	}
 	
 }

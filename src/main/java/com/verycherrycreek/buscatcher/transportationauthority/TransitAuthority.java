@@ -46,5 +46,8 @@ public abstract class TransitAuthority {
 		return retVal;
 	}
 
+	public TRANSIT_AUTHORITY getTransitAuthority() {
+		return identifier;
+	}
 
 }

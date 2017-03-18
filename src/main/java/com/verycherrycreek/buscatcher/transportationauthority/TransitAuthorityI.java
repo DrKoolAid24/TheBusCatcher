@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
+import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityProperties.TRANSIT_AUTHORITY;
 
 /**
  * @author skilker
@@ -36,4 +37,6 @@ public interface TransitAuthorityI {
 	public void setUsername(String pUsername);
 	
 	public void setPassword(String pPassword);
+	
+	public TRANSIT_AUTHORITY getTransitAuthority();
 }

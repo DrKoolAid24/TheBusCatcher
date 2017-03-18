@@ -10,6 +10,7 @@ import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 public class VehiclePosition {
     @Id
     private ObjectId id;
+    private String agency;
     private String vehicleId;
     private String tripId;
     private String scheduleRelationship;
@@ -27,6 +28,7 @@ public class VehiclePosition {
 
     public VehiclePosition(FeedEntity pFeedEntity) {
         this.vehicleId = pFeedEntity.getVehicle().getVehicle().getId();
+        this.agency = "RTD";
         // Trip Updates
         this.tripId = pFeedEntity.getVehicle().getTrip().getTripId();
         this.scheduleRelationship = pFeedEntity.getVehicle().getTrip().getScheduleRelationship().toString();

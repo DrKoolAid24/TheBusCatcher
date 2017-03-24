@@ -8,6 +8,9 @@ package com.verycherrycreek.buscatcher.converter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
@@ -41,27 +44,33 @@ public class RTDtoMongoDBConverter extends Converter implements ConverterI {
 		
 		datastore.openDatastoreConnection();
 		
-		// Drop VehiclePositions
-		datastore.dropVehiclePositions();
-		
-		// Get FeedMessage with VehiclePositions, convert to array, and update the DB
-		FeedMessage vehiclePositionsFeedMessage = null;
-		try {
-			vehiclePositionsFeedMessage = transitAuthority.getVehiclePositions();
-
-			ArrayList<VehiclePosition> vehiclePositions = new ArrayList<VehiclePosition>();
-			for (FeedEntity entity : vehiclePositionsFeedMessage.getEntityList()) {
-				VehiclePosition vp = new VehiclePosition(entity);
-				vehiclePositions.add(vp);
+		while(true) {
+			this.updateVehiclePositions();
+			this.updateTripUpdates();
+			try {
+				TimeUnit.SECONDS.sleep(30);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				datastore.closeDatastoreConnection();
 			}
-			datastore.updateVehiclePositions(vehiclePositions);
+		}
 		
-		} catch (MalformedURLException e) {
-			System.out.println("Malformed URL: " + e.getMessage());
-		} catch (IOException e) {
-			System.out.println("I/O Error: " + e.getMessage());
-		}	
-		
+	}
+//TODO try this to avoid drift	
+//	final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+//	executorService.scheduleAtFixedRate(updateRealtimeData(), 0, 60, TimeUnit.SECONDS);
+//	private  Runnable updateRealtimeData() {
+//		updateVehiclePositions();				
+//		updateTripUpdates();
+//		return;	
+//	}
+
+
+	/**
+	 * 
+	 */
+	private void updateTripUpdates() {
 		// Drop TripUpdates
 		datastore.dropTripUpdates();
 
@@ -81,9 +90,33 @@ public class RTDtoMongoDBConverter extends Converter implements ConverterI {
 			System.out.println("Malformed URL: " + e.getMessage());
 		} catch (IOException e) {
 			System.out.println("I/O Error: " + e.getMessage());
-		}	
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void updateVehiclePositions() {
+		// Drop VehiclePositions
+		datastore.dropVehiclePositions();
 		
-		datastore.closeDatastoreConnection();
+		// Get FeedMessage with VehiclePositions, convert to array, and update the DB
+		FeedMessage vehiclePositionsFeedMessage = null;
+		try {
+			vehiclePositionsFeedMessage = transitAuthority.getVehiclePositions();
+
+			ArrayList<VehiclePosition> vehiclePositions = new ArrayList<VehiclePosition>();
+			for (FeedEntity entity : vehiclePositionsFeedMessage.getEntityList()) {
+				VehiclePosition vp = new VehiclePosition(entity);
+				vehiclePositions.add(vp);
+			}
+			datastore.updateVehiclePositions(vehiclePositions);
+		
+		} catch (MalformedURLException e) {
+			System.out.println("Malformed URL: " + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("I/O Error: " + e.getMessage());
+		}
 	}
 
 }

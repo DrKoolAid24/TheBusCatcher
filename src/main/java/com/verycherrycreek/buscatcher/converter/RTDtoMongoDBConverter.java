@@ -44,7 +44,8 @@ public class RTDtoMongoDBConverter extends Converter implements ConverterI {
 		
 		datastore.openDatastoreConnection();
 		
-		while(true) {
+		boolean keepRunning = true;
+		while(keepRunning) {
 			this.updateVehiclePositions();
 			this.updateTripUpdates();
 			try {
@@ -53,6 +54,7 @@ public class RTDtoMongoDBConverter extends Converter implements ConverterI {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				datastore.closeDatastoreConnection();
+				keepRunning = false;
 			}
 		}
 		

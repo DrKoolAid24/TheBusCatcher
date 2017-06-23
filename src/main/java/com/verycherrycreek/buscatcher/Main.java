@@ -52,6 +52,8 @@ import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityI;
 import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityProperties;
 
 public class Main {
+	
+	// Test comment recover
 
 	private static String CONFIG_PROPERTIES_FILE = "config.properties";
 	private static String ERROR_RETRIEVING_CONFIGURATION_FILE = "Error occured retrieving configuration file";

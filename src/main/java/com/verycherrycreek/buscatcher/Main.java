@@ -53,6 +53,7 @@ import com.verycherrycreek.buscatcher.transportationauthority.TransitAuthorityPr
 
 public class Main {
 	
+	//Test
 	private static String CONFIG_PROPERTIES_FILE = "config.properties";
 	private static String ERROR_RETRIEVING_CONFIGURATION_FILE = "Error occured retrieving configuration file";
 	private static String INVALID_TRANSIT_AUTHORITY = "Invalid Transit Authority found";
